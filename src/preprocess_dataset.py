@@ -9,7 +9,7 @@ parser.add_argument('--output_path', metavar='OUTPUT_PATH', type=str, default='.
                     help='OUTPUT path to store preprocessed set into parquet')
 
 if __name__ == '__main__':
-    print('Preprocessing for CSV files having the same schema as training.csv')
+    print('Preprocessing for CSV files having the same schema as training.csv.')
     args = parser.parse_args()
     csv_path = args.csv_path
     output_path = args.output_path
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     input_df = load_and_process_training_set(csv_path)
     input_df_with_lags = get_time_lags(input_df)
     input_df_with_lags.to_parquet(output_file, compression='snappy', index=False)
+    print('Preprocessing complete. Look at your output folder.')
 
 
 
