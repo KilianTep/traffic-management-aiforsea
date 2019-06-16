@@ -1,3 +1,5 @@
+# dictionaries to be used during evaluation at T+1, .., T+5. Ensure the scaling is replicated properly
+
 ts_scaled_to_norm = {
     0.0: 0.0,
     0.010526315789473684: 0.25,
