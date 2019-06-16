@@ -9,6 +9,7 @@ parser.add_argument('--output_path', metavar='OUTPUT_PATH', type=str, default='.
                     help='OUTPUT path to store preprocessed set into parquet')
 
 if __name__ == '__main__':
+    print('Preprocessing for CSV files having the same schema as training.csv')
     args = parser.parse_args()
     csv_path = args.csv_path
     output_path = args.output_path
