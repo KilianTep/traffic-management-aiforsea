@@ -37,5 +37,6 @@ if __name__ == '__main__':
     evaluate_t_plus_1_performance(transformed_test_df, model, demand_features, ts_features, target_features)
 
     # evalute performance at t + 5
-    evaluate_t_plus_5_performance(transformed_test_df, model, ts_norm_to_scaled, ts_scaled_to_norm)
+    evaluate_t_plus_5_performance(transformed_test_df, model, ts_norm_to_scaled, ts_scaled_to_norm,
+                                  demand_features, ts_features)
     print('Performance evaluation over.')
