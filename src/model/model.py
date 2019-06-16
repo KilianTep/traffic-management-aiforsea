@@ -134,7 +134,8 @@ def evaluate_t_plus_1_performance(transformed_test_df, model, demand_features, t
     print('--------------------------------------------------')
 
 
-def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, ts_scaled_to_norm):
+def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, ts_scaled_to_norm,
+                                  demand_features, ts_features):
     '''
     Function to evalute at T+1,..,T+5 performance
     :param transform_test_df:
@@ -143,12 +144,6 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
     :param ts_scaled_to_norm:
     :return: print performance scores (MSE, RMSE)
     '''
-    demand_features = ['d_t', 'd_t_minus_1', 'd_t_minus_2',
-                       'd_t_minus_3', 'd_t_minus_4', 'd_t_minus_5']
-
-    ts_features = ['lat_scaled', 'lon_scaled', 'timestamp_decimal_scaled',
-                   'ts_d_minus_1_scaled', 'ts_d_minus_2_scaled', 'ts_d_minus_3_scaled',
-                   'ts_d_minus_4_scaled', 'ts_d_minus_5_scaled']
 
     step_back = len(demand_features)
     ts_shape = len(ts_features)
