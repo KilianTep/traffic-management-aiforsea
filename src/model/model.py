@@ -34,11 +34,12 @@ def rmse(y_true, y_pred):
 
 def prepare_model_inputs(transformed_df, demand_features, ts_features, target_features):
     '''
+    This function does all the necessary reshaping to pass the features into the model
     :param transformed_df: training.csv transformed with ./src/preprocess_dataset.py
     :param demand_features:
     :param ts_features:
     :param target_features:
-    :return:
+    :return: model inputs
     '''
     sample_weight = transformed_df.loc[transformed_df.day <= 47]['sample_weight'].values
 
@@ -72,6 +73,13 @@ def prepare_model_inputs(transformed_df, demand_features, ts_features, target_fe
 
 
 def demand_lstm(step_back, ts_shape, y_shape):
+    '''
+    Architecture for LSTM model
+    :param step_back:  number step back in time for demand
+    :param ts_shape: shape of time time-space vector
+    :param y_shape: shape of target vector
+    :return: model
+    '''
     demand_input = Input(shape=(step_back, 1))
     lstm_layer = LSTM(units=100, activation='tanh', return_sequences=True)(demand_input)
     dropout = Dropout(0.5)(lstm_layer)
@@ -97,6 +105,15 @@ def demand_lstm(step_back, ts_shape, y_shape):
 
 
 def evaluate_t_plus_1_performance(transformed_test_df, model, demand_features, ts_features, target_features):
+    '''
+    Function to evaluate performance at T+1
+    :param transformed_test_df:
+    :param model:
+    :param demand_features:
+    :param ts_features:
+    :param target_features:
+    :return: print performance scores (MSE, RMSE)
+    '''
     step_back = len(demand_features)
     ts_shape = len(ts_features)
 
@@ -118,6 +135,14 @@ def evaluate_t_plus_1_performance(transformed_test_df, model, demand_features, t
 
 
 def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, ts_scaled_to_norm):
+    '''
+    Function to evalute at T+1,..,T+5 performance
+    :param transform_test_df:
+    :param model:
+    :param ts_norm_to_scaled:
+    :param ts_scaled_to_norm:
+    :return: print performance scores (MSE, RMSE)
+    '''
     demand_features = ['d_t', 'd_t_minus_1', 'd_t_minus_2',
                        'd_t_minus_3', 'd_t_minus_4', 'd_t_minus_5']
 
