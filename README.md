@@ -1,2 +1,86 @@
 # traffic-management-aiforsea
 https://www.aiforsea.com/traffic-management
+
+Submission by **Kilian Tep**
+
+### Getting started
+Install necessary dependencies with virtual environment:
+```bash
+cd ~/traffic-management-aiforsea/
+
+# install virtual environment for python3
+python3 -m virtualenv venv
+
+# once the venv is activated, we will just need to specify python instead of python3
+source ./venv/bin/activate
+
+# install requirements
+pip install -r requirements.txt
+
+# export right python path
+export PYTHONPATH=$(pwd)
+```
+
+### Recommended procedure for smooth running
+Download the `training.csv` from https://www.aiforsea.com/traffic-management and 
+place it inside the folder `./dataset`.
+
+In order to preprocess the training set and create the necessary features before training:
+```bash
+python ./src/preprocess_dataset.py --csv_path ./dataset/training.csv --output_path ./dataset
+```
+This procedure may take some time, depending on your machine's computing power.
+
+**If you wish to retrain the model**, you can run the following command. It is strongly advised you connect your machine
+to GPU resources. I assume you have followed the above procedure:
+```bash
+python ./src/train_model.py --transformed_train_path ./dataset/training.csv_transformed.snappy.parquet --output_model_path ./models --epochs 30 --batch_size 128 --log_path ./src/logs
+```
+The model was trained on the first six weeks of the dataset and evaluated on the last two weeks.
+You can also save the training logs in the specified output path for `--log_path`
+
+If you do not wish to retrain the model, you can simply use the file `./models/best_lstm_model` by running the following commands:
+
+```bash
+# If you want to use your own test set, you need to preprocess it first:
+python ./src/preprocess_dataset.py --csv_path <PATH_TO_CSV_TEST> --output_path ./dataset
+
+# pass in the preprocessed test set into the following command:
+python ./src/evaluate_model.py --model_path ./models/best_lstm_model --transformed_test_df_path ./dataset/<PATH_TO_CSV_TEST>_transformed.snappy.parquet 
+```
+The script `./src/evaluate_model.py` will give you the MSE and RMSE performance of the model at T+1, as well as T+1, .., T+5, 
+which is conducted through a window function.
+
+**Warning: the evaluation of the model at T+1, ..., T+5 may take a long time if you test the performance of numerous 
+examples. The performance at T+1 is relatively fast as it is the default architecture.**
+
+## High level overview of LSTM architecture
+![Model Architecture](model.png)
+
+This LSTM architecture aims to predict the demand at **Demand T+1**
+
+The first input layer takes in a vector of size 6 consisting of Demand T until Demand T-5.
+It then passes on this input layer into a few LSTM layers.
+
+The second input layer takes in a vector of size 8 consisting of the following normalized values (Min-Max Scaling):
+latitude, longitude, timestamp at time T, ..., timestamp at time T-5.
+
+My intuition was that the location as well as the time of the day would have a strong impact on the demand. I basically
+sought to combine the pure demand input with the time and space input so that the model learns the relationship with 
+respect to demand at T+1.
+
+During the training, I also gave **exponential weighting** to the samples based on their demand.
+I noticed that the distribution of demand was very low in majority so I wanted to make sure the model learn well on the
+high peak demands. The weighting simply followed this formula:
+
+``
+sample_weight = exp(demand * 10)
+``
+
+## Training Methodology and Results
+I trained the model on the first 47 days and evaluated its performance on the 
+remaining 14 ones.
+
+***T+1 Performance***: achieved RMSE of 0.04 on last 14 days.
+
+***T+1, ..., T+5 Performance***: achieved RMSE of 0.07 on last 14 days.
