@@ -61,11 +61,11 @@ examples. The performance at T+1 is relatively fast as it is the default archite
 
 This LSTM architecture aims to predict the demand at **Demand T+1**
 
-The first input layer takes in a vector of size 6 consisting of Demand T until Demand T-5.
+The first input layer takes in a **vector of size 6 consisting of Demand T until Demand T-5.**
 It then passes on this input layer into a few LSTM layers.
 
-The second input layer takes in a vector of size 8 consisting of the following normalized values (Min-Max Scaling):
-latitude, longitude, timestamp at time T, ..., timestamp at time T-5.
+The second input layer takes in a **vector of size 8 consisting of the following normalized values (Min-Max Scaling):
+latitude, longitude, timestamp at time T, ..., timestamp at time T-5.**
 
 My intuition was that the location as well as the time of the day would have a strong impact on the demand. I basically
 sought to combine the pure demand input with the time and space input so that the model learns the relationship with 
