@@ -176,8 +176,8 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
             # shifting the time idx of vector
             d_feat_vector = np.append(pred_next_step, d_feat_vector[:, :-1, :])
             d_feat_vector = d_feat_vector.reshape(1, step_back, 1)
-            # shifting time vector
 
+            # shifting time vector
             time_vector_shift = list(map(time_shift, time_vector))
             time_shift_scaled = [ts_norm_to_scaled[shift] for shift in time_vector_shift]
 
