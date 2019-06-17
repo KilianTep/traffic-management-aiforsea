@@ -6,6 +6,8 @@ Submission by **Kilian Tep**
 ### Getting started
 Install necessary dependencies with virtual environment:
 ```bash
+git clone https://github.com/KilianTep/traffic-management-aiforsea.git
+
 cd ~/traffic-management-aiforsea/
 
 # install virtual environment for python3
@@ -32,7 +34,7 @@ python ./src/preprocess_dataset.py --csv_path ./dataset/training.csv --output_pa
 This procedure may take some time, depending on your machine's computing power.
 
 **If you wish to retrain the model**, you can run the following command. It is strongly advised you connect your machine
-to GPU resources. I assume you have followed the above procedure:
+to GPU resources. (I assume you have followed the above procedure before running the command) 
 ```bash
 python ./src/train_model.py --transformed_train_path ./dataset/training.csv_transformed.snappy.parquet --output_model_path ./models --epochs 30 --batch_size 128 --log_path ./src/logs
 ```
