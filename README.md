@@ -27,14 +27,14 @@ export PYTHONPATH=$(pwd)
 Download the `training.csv` from https://www.aiforsea.com/traffic-management and 
 place it inside the folder `./dataset`.
 
-### Preprocessing and feature engineering
+### 1. Preprocessing and feature engineering
 In order to preprocess the training set and create the necessary features before training:
 ```bash
 python ./src/preprocess_dataset.py --csv_path ./dataset/training.csv --output_path ./dataset
 ```
 This procedure may take some time, depending on your machine's computing power.
 
-### Model training
+### 2. Model training
 **If you wish to retrain the model**, you can run the following command. It is strongly advised you connect your machine
 to GPU resources. (I assume you have followed the above procedure before running the command) 
 ```bash
@@ -43,7 +43,7 @@ python ./src/train_model.py --transformed_train_path ./dataset/training.csv_tran
 The model was trained on the first six weeks of the dataset and evaluated on the last two weeks.
 You can also save the training logs in the specified output path for `--log_path`
 
-### Model evaluation
+### 3. Model evaluation
 **If you do not wish to retrain the model**, you can simply use the file `./models/best_lstm_model` by running the following commands:
 ```bash
 # If you want to use your own test set, you need to preprocess it first:
