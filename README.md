@@ -3,7 +3,7 @@ https://www.aiforsea.com/traffic-management
 
 Submission by **Kilian Tep**
 
-### Getting started
+## Getting started
 Install necessary dependencies with virtual environment:
 ```bash
 git clone https://github.com/KilianTep/traffic-management-aiforsea.git
@@ -23,16 +23,18 @@ pip install -r requirements.txt
 export PYTHONPATH=$(pwd)
 ```
 
-### Recommended procedure for smooth running
+## Recommended procedure for smooth running
 Download the `training.csv` from https://www.aiforsea.com/traffic-management and 
 place it inside the folder `./dataset`.
 
+### Preprocessing and feature engineering
 In order to preprocess the training set and create the necessary features before training:
 ```bash
 python ./src/preprocess_dataset.py --csv_path ./dataset/training.csv --output_path ./dataset
 ```
 This procedure may take some time, depending on your machine's computing power.
 
+### Model training
 **If you wish to retrain the model**, you can run the following command. It is strongly advised you connect your machine
 to GPU resources. (I assume you have followed the above procedure before running the command) 
 ```bash
@@ -41,8 +43,8 @@ python ./src/train_model.py --transformed_train_path ./dataset/training.csv_tran
 The model was trained on the first six weeks of the dataset and evaluated on the last two weeks.
 You can also save the training logs in the specified output path for `--log_path`
 
+### Model evaluation
 **If you do not wish to retrain the model**, you can simply use the file `./models/best_lstm_model` by running the following commands:
-
 ```bash
 # If you want to use your own test set, you need to preprocess it first:
 python ./src/preprocess_dataset.py --csv_path <PATH_TO_CSV_TEST> --output_path ./dataset
@@ -50,6 +52,8 @@ python ./src/preprocess_dataset.py --csv_path <PATH_TO_CSV_TEST> --output_path .
 # pass in the preprocessed test set into the following command:
 python ./src/evaluate_model.py --model_path ./models/best_lstm_model --transformed_test_df_path ./dataset/<PATH_TO_CSV_TEST>_transformed.snappy.parquet 
 ```
+If you've retrained the model, simply modify the argument `--model_path` with the corresponding path.
+
 The script `./src/evaluate_model.py` will give you the MSE and RMSE performance of the model at T+1, as well as T+1, .., T+5, 
 which is conducted through a window function.
 
