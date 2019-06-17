@@ -41,7 +41,7 @@ python ./src/train_model.py --transformed_train_path ./dataset/training.csv_tran
 The model was trained on the first six weeks of the dataset and evaluated on the last two weeks.
 You can also save the training logs in the specified output path for `--log_path`
 
-If you do not wish to retrain the model, you can simply use the file `./models/best_lstm_model` by running the following commands:
+**If you do not wish to retrain the model**, you can simply use the file `./models/best_lstm_model` by running the following commands:
 
 ```bash
 # If you want to use your own test set, you need to preprocess it first:
