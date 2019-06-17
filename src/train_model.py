@@ -1,7 +1,7 @@
 import argparse
 import datetime
 import pandas as pd
-from src.model import prepare_model_inputs, demand_lstm, features
+from src.model import prepare_model_inputs, demand_lstm, features, rmse
 from keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau
 
 DATE_STR = datetime.date.today()
@@ -70,7 +70,8 @@ if __name__ == '__main__':
         sample_weight=sample_weight,
         batch_size=batch_size,
         epochs=epochs,
-        callbacks=[checkpointer, csv_logger, reduce_lr]
+        callbacks=[checkpointer, csv_logger, reduce_lr],
+        metrics=[rmse]
     )
 
     print('Saving model at {}...'.format(model_filepath))
