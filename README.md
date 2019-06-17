@@ -3,6 +3,12 @@ https://www.aiforsea.com/traffic-management
 
 Submission by **Kilian Tep**
 
+In order to understand my thought-process, take a look at the two following Medium articles:
+
+[AI For SEA Traffic Management: Feature Engineering (Part 1/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-feature-engineering-part-1-2-e54f8d4eaa9e?postPublishedType=repub)
+
+[AI For SEA Traffic Management: Modeling (Part 2/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-modeling-part-2-2-45cf301bd37?postPublishedType=repub)
+
 ## Getting started
 Install necessary dependencies with virtual environment:
 ```bash
