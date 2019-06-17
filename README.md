@@ -52,6 +52,8 @@ python ./src/preprocess_dataset.py --csv_path <PATH_TO_CSV_TEST> --output_path .
 # pass in the preprocessed test set into the following command:
 python ./src/evaluate_model.py --model_path ./models/best_lstm_model --transformed_test_df_path ./dataset/<PATH_TO_CSV_TEST>_transformed.snappy.parquet 
 ```
+**Warning:** your csv test file must have the same schema as `./dataset/training.csv`.
+
 If you've retrained the model, simply modify the argument `--model_path` with the corresponding path.
 
 The script `./src/evaluate_model.py` will give you the MSE and RMSE performance of the model at T+1, as well as T+1, .., T+5, 
