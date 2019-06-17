@@ -93,7 +93,8 @@ sample_weight = exp(demand * 10)
 
 ## Training Methodology and Results
 I trained the model on the first 47 days and evaluated its performance on the 
-remaining 14 ones.
+remaining 14 ones. Roughly, the training set has about 3.2 million samples and
+the test set has nearly 1 million samples.
 
 ***T+1 Performance***: achieved RMSE of 0.04 on last 14 days.
 
