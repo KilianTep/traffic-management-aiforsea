@@ -86,3 +86,7 @@ remaining 14 ones.
 ***T+1 Performance***: achieved RMSE of 0.04 on last 14 days.
 
 ***T+1, ..., T+5 Performance***: achieved RMSE of 0.07 on last 14 days.
+
+## Other
+You can check out my `./notebooks/preliminary_analysis.ipynb` to see the analysis that encouraged some of my thinking
+when deciding on the architecture and feature selection.
