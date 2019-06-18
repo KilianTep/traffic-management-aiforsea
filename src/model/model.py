@@ -91,9 +91,9 @@ def demand_lstm(step_back, ts_shape, y_shape):
     flatten_lstm3 = Flatten()(lstm_layer3)
 
     time_space_input = Input(shape=(ts_shape,))
-    dense_ts = Dense(64)(time_space_input)  # hopefully it learns the relationship between time and space
+    dense_ts = Dense(64)(time_space_input)
 
-    merge_ts_lstm = concatenate([flatten_lstm3, dense_ts])  # shape (1, 74)
+    merge_ts_lstm = concatenate([flatten_lstm3, dense_ts])
     dense_1 = Dense(75)(merge_ts_lstm)
     dense_2 = Dense(25)(dense_1)
     output_dense = Dense(y_shape, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0))(dense_2)
