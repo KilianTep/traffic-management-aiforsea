@@ -60,7 +60,7 @@ if __name__ == '__main__':
         monitor='loss',
         factor=0.2,
         patience=2,
-        min_lr=0.00002)
+        min_lr=0.000008)
 
     model = demand_lstm(step_back, ts_shape, y_shape)
     model.fit(
