@@ -9,12 +9,18 @@ import keras.backend as K
 
 # dictionary to keep track of features used from transformed training set
 features = {
-    'demand_features': ['d_t', 'd_t_minus_1', 'd_t_minus_2',
-                   'd_t_minus_3', 'd_t_minus_4', 'd_t_minus_5'],
+    'demand_features': [
+        'd_t_minus_5', 'd_t_minus_4',
+        'd_t_minus_3', 'd_t_minus_2',
+        'd_t_minus_1', 'd_t'
+    ],
 
-    'ts_features': ['lat_scaled', 'lon_scaled', 'timestamp_decimal_scaled',
-                   'ts_d_minus_1_scaled', 'ts_d_minus_2_scaled', 'ts_d_minus_3_scaled',
-                   'ts_d_minus_4_scaled', 'ts_d_minus_5_scaled'],
+    'ts_features': [
+        'lat_scaled', 'lon_scaled',
+        'ts_d_minus_5', 'ts_d_minus_4',
+        'ts_d_minus_3', 'ts_d_minus_2',
+        'ts_d_minus_1', 'timestamp_decimal'
+    ],
 
     'target_features': ['d_t_plus_1']
 }
