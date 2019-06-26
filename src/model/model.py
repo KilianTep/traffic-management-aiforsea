@@ -157,9 +157,13 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
     d_preds = []
     print('Evaluating t+1..t+5 performance for {} predictions.'.format(transform_test_df.shape[0]))
     print('This may take some time if your test set is very big.')
+    print('--------------------------------------------------')
+    temp_rmse = None
     for idx, row in transform_test_df.iterrows():
         if (idx + 1) % 1000 == 0:
             print('{} / {} predictions evaluated'.format(idx + 1, transform_test_df.shape[0]))
+            print('t+1, ..., t+5 RMSE so far: {}'.format(temp_rmse))
+            print('--------------------------------------------------')
         elif (idx + 1) % transform_test_df.shape[0] == 0:
             print('{} / {} predictions evaluated'.format(idx + 1, transform_test_df.shape[0]))
 
@@ -180,7 +184,7 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
             time_shift = lambda t: t + step * 0.25 if (t + step * 0.25) <= 23.75 else t + step * 0.25 - 24
 
             # shifting the time idx of vector
-            d_feat_vector = np.append(pred_next_step, d_feat_vector[:, :-1, :])
+            d_feat_vector = np.append(d_feat_vector[:, 1:, :], pred_next_step)
             d_feat_vector = d_feat_vector.reshape(1, step_back, 1)
 
             # shifting time vector
@@ -192,6 +196,7 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
             ts_vector = ts_vector.reshape(1, ts_shape)
 
         d_preds.append(preds)
+        temp_rmse = np.sqrt(metrics.mean_squared_error(d_truth, d_preds))
 
     mse_score = metrics.mean_squared_error(d_truth, d_preds)
     rmse_score = np.sqrt(metrics.mean_squared_error(d_truth, d_preds))
