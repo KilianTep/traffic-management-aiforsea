@@ -17,9 +17,9 @@ features = {
 
     'ts_features': [
         'lat_scaled', 'lon_scaled',
-        'ts_d_minus_5', 'ts_d_minus_4',
-        'ts_d_minus_3', 'ts_d_minus_2',
-        'ts_d_minus_1', 'timestamp_decimal'
+        'ts_d_minus_5_scaled', 'ts_d_minus_4_scaled',
+        'ts_d_minus_3_scaled', 'ts_d_minus_2_scaled',
+        'ts_d_minus_1_scaled', 'timestamp_decimal_scaled'
     ],
 
     'target_features': ['d_t_plus_1']
