@@ -115,36 +115,48 @@ def get_time_lags(df):
     :return: transformed_df with relevant time lags
     '''
     print('Getting time lags for our dataset')
-    unique_geohash = df['geohash6'].unique()
-    temp = []
-    for idx, gh in enumerate(unique_geohash):
-        if (idx + 1) % 50 == 0:
-            print('{}/{} geohash processed'.format(idx + 1, len(unique_geohash)))
-        elif (idx + 1) % len(unique_geohash) == 0:
-            print('{}/{} geohash processed'.format(idx + 1, len(unique_geohash)))
-
-        rel_gh = df.loc[df.geohash6 == gh].copy()
-        for t in range(1, 6):
-            rel_gh['ts_plus_{}'.format(t)] = rel_gh['timestamp_hour'].shift(-t)
-            rel_gh['tdelta_plus_{}'.format(t)] = rel_gh['ts_plus_{}'.format(t)] - rel_gh['timestamp_hour']
-            rel_gh['d_t_plus_{}'.format(t)] = rel_gh['demand'].shift(-t)
-            rel_gh['d_t_plus_{}'.format(t)] = rel_gh.apply(lambda x: replace_mistmatching_demand(x, t), axis=1)
-
-            rel_gh['ts_minus_{}'.format(t)] = rel_gh['timestamp_hour'].shift(t)
-            rel_gh['tdelta_minus_{}'.format(t)] = rel_gh['ts_minus_{}'.format(t)] - rel_gh['timestamp_hour']
-            rel_gh['d_t_minus_{}'.format(t)] = rel_gh['demand'].shift(t)
-            rel_gh['d_t_minus_{}'.format(t)] = rel_gh.apply(lambda x: replace_mistmatching_demand(x, -t), axis=1)
-
-        temp.append(rel_gh)
-
-    train_df = pd.concat(temp)
-
+    train_df = df.copy()
+    # unique_geohash = df['geohash6'].unique()
+    # temp = []
+    # for idx, gh in enumerate(unique_geohash):
+    #     if (idx + 1) % 50 == 0:
+    #         print('{}/{} geohash processed'.format(idx + 1, len(unique_geohash)))
+    #     elif (idx + 1) % len(unique_geohash) == 0:
+    #         print('{}/{} geohash processed'.format(idx + 1, len(unique_geohash)))
+    #
+    #     rel_gh = df.loc[df.geohash6 == gh].copy()
+    #     for t in range(1, 6):
+    #         rel_gh['ts_plus_{}'.format(t)] = rel_gh['timestamp_hour'].shift(-t)
+    #         rel_gh['tdelta_plus_{}'.format(t)] = rel_gh['ts_plus_{}'.format(t)] - rel_gh['timestamp_hour']
+    #         rel_gh['d_t_plus_{}'.format(t)] = rel_gh['demand'].shift(-t)
+    #         rel_gh['d_t_plus_{}'.format(t)] = rel_gh.apply(lambda x: replace_mistmatching_demand(x, t), axis=1)
+    #
+    #         rel_gh['ts_minus_{}'.format(t)] = rel_gh['timestamp_hour'].shift(t)
+    #         rel_gh['tdelta_minus_{}'.format(t)] = rel_gh['ts_minus_{}'.format(t)] - rel_gh['timestamp_hour']
+    #         rel_gh['d_t_minus_{}'.format(t)] = rel_gh['demand'].shift(t)
+    #         rel_gh['d_t_minus_{}'.format(t)] = rel_gh.apply(lambda x: replace_mistmatching_demand(x, -t), axis=1)
+    #
+    #     temp.append(rel_gh)
+    #
+    # train_df = pd.concat(temp)
     scaler = MinMaxScaler()
-    for lag in range(1, 6):
-        train_df['ts_d_minus_{}'.format(lag)] = train_df['timestamp_decimal'] \
-            .apply(lambda x: create_ts_decimal_lag(x, lag))
-        train_df['ts_d_minus_{}_scaled'.format(lag)] = scaler \
-            .fit_transform(train_df['ts_d_minus_{}'.format(lag)].values.reshape(-1, 1))
+    for t in range(1, 6):
+        print('Getting time lag / step {} / 5'.format(t))
+        train_df['ts_plus_{}'.format(t)] = train_df.groupby('geohash6')['timestamp_hour'].shift(-t)
+        train_df['tdelta_plus_{}'.format(t)] = train_df['ts_plus_{}'.format(t)] - train_df['timestamp_hour']
+        train_df['d_t_plus_{}'.format(t)] = train_df.groupby('geohash6')['demand'].shift(-t)
+        train_df['d_t_plus_{}'.format(t)] = train_df.apply(lambda x: replace_mistmatching_demand(x, t), axis=1)
+
+        train_df['ts_minus_{}'.format(t)] = train_df.groupby('geohash6')['timestamp_hour'].shift(t)
+        train_df['tdelta_minus_{}'.format(t)] = train_df['ts_minus_{}'.format(t)] - train_df['timestamp_hour']
+        train_df['d_t_minus_{}'.format(t)] = train_df.groupby('geohash6')['demand'].shift(t)
+        train_df['d_t_minus_{}'.format(t)] = train_df.apply(lambda x: replace_mistmatching_demand(x, -t), axis=1)
+
+        train_df['ts_d_minus_{}'.format(t)] = train_df['timestamp_decimal'] \
+            .apply(lambda x: create_ts_decimal_lag(x, t))
+        train_df['ts_d_minus_{}_scaled'.format(t)] = scaler \
+            .fit_transform(train_df['ts_d_minus_{}'.format(t)].values.reshape(-1, 1))
+
     train_df = train_df[sorted(train_df.columns)].dropna().reset_index(drop=True)
     print('Finished getting time lags. Find parquet file into output folder')
     return train_df
