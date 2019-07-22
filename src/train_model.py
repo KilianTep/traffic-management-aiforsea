@@ -7,13 +7,6 @@ import json
 import os
 import s3fs
 
-with open('./src/aws_config.json', 'r') as config_file:
-    aws_config = json.load(config_file)
-
-os.environ['AWS_PROFILE'] = aws_config['aws_env']['AWS_PROFILE']
-os.environ['AWS_DEFAULT_REGION'] = aws_config['aws_env']['AWS_DEFAULT_REGION']
-
-
 DATE_STR = datetime.date.today()
 
 parser = argparse.ArgumentParser(description='Train Demand LSTM Model')
@@ -56,9 +49,15 @@ if __name__ == '__main__':
     log_filepath = '{}/model_{}.log'.format(log_path, DATE_STR)
 
     if s3_option:
+        with open('./src/aws_config.json', 'r') as config_file:
+            aws_config = json.load(config_file)
+
+        os.environ['AWS_PROFILE'] = aws_config['aws_env']['AWS_PROFILE']
+        os.environ['AWS_DEFAULT_REGION'] = aws_config['aws_env']['AWS_DEFAULT_REGION']
+
         s3 = s3fs.S3FileSystem(anon=True)
         with s3.open(transformed_train_path, 'r') as f:
-            transformed_df = pd.read_parquet(transformed_train_path)
+            transformed_df = pd.read_parquet(f)
         with s3.open(log_filepath, 'w') as f:
             csv_logger = CSVLogger(
                 filename=f,
