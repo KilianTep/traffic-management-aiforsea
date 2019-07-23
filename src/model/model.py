@@ -210,12 +210,14 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
 
 def lstm_block(dense_input, step_back):
     dense_input = Reshape((step_back, 1))(dense_input)
-    lstm_layer1 = LSTM(units=50, activation='tanh', return_sequences=True)(dense_input)
+    lstm_layer1 = LSTM(units=100, activation='tanh', return_sequences=True)(dense_input)
     dropout_1 = Dropout(0.5)(lstm_layer1)
-    lstm_layer2 = LSTM(units=25, activation='tanh', return_sequences=True)(dropout_1)
-    dropout_2 = Dropout(0.2)(lstm_layer2)
-    lstm_layer3 = LSTM(units=10, activation='tanh', return_sequences=True)(dropout_2)
-    flatten_lstm3 = Flatten()(lstm_layer3)
+    lstm_layer2 = LSTM(units=50, activation='tanh', return_sequences=True)(dropout_1)
+    dropout_2 = Dropout(0.5)(lstm_layer2)
+    lstm_layer3 = LSTM(units=25, activation='tanh', return_sequences=True)(dropout_2)
+    dropout_3 = Dropout(0.2)(lstm_layer3)
+    lstm_layer4 = LSTM(units=10, activation='tanh', return_sequences=True)(dropout_3)
+    flatten_lstm3 = Flatten()(lstm_layer4)
     return flatten_lstm3
 
 
