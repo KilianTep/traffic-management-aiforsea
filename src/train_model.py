@@ -116,6 +116,8 @@ if __name__ == '__main__':
         sample_weight=weight_dict
     )
 
+    print(model.summary())
+
     print('Saving model at {}...'.format(model_filepath))
     if s3_option:
         with s3.open(model_filepath, 'w') as f:
