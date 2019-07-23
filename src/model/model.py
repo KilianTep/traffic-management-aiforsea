@@ -208,8 +208,9 @@ def evaluate_t_plus_5_performance(transform_test_df, model, ts_norm_to_scaled, t
     print('--------------------------------------------------')
 
 
-def lstm_block(dense_input, step_back):
-    dense_input = Reshape((step_back, 1))(dense_input)
+def lstm_block(dense_input):
+    layer_dim = dense_input.shape[1].value
+    dense_input = Reshape((layer_dim, 1))(dense_input)
     lstm_layer1 = LSTM(units=100, activation='tanh', return_sequences=True)(dense_input)
     dropout_1 = Dropout(0.5)(lstm_layer1)
     lstm_layer2 = LSTM(units=50, activation='tanh', return_sequences=True)(dropout_1)
@@ -221,62 +222,70 @@ def lstm_block(dense_input, step_back):
     return flatten_lstm3
 
 
-def dense_block(flattened_lstm, step_back):
+def dense_block(flattened_lstm):
     dense_1 = Dense(75, activation='relu')(flattened_lstm)
     dense_2 = Dense(25, activation='relu')(dense_1)
     dense_3 = Dense(10, activation='relu')(dense_2)
-    dense_4 = Dense(step_back, activation='relu', kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0))(
-        dense_3)  # re-using this vector inside next lstm block
+    dense_4 = Dense(5, activation='relu')(dense_3)
     return dense_4
+
+
+def append_demand_input(demand_input, new_pred):
+    new_pred = Reshape((1, 1))(new_pred)
+    new_demand_input = concatenate([demand_input, new_pred], axis=1)
+    return new_demand_input
 
 
 def window_lstm(step_back, ts_shape):
     demand_predictions = []  # array that will contain all predictions
     demand_input = Input(shape=(step_back, 1))
-    flatten_lstm_block_1 = lstm_block(demand_input, step_back)
+    flatten_lstm_block_1 = lstm_block(demand_input)
 
     # adding time space and input
     time_space_input = Input(shape=(ts_shape,))
     dense_ts = Dense(64, name='dense_ts')(time_space_input)
 
     merge_ts_lstm = concatenate([flatten_lstm_block_1, dense_ts])
-    dense_block_1 = dense_block(merge_ts_lstm, step_back)
+    dense_block_1 = dense_block(merge_ts_lstm)
 
     # generating d_t+1
     d_t_plus_1 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_1')(dense_block_1)
     demand_predictions.append(d_t_plus_1)
 
-    # using dense_block_1 from d_t+1 prediction
-    flatten_lstm_block_2 = lstm_block(dense_block_1, step_back)
+    demand_input_2 = append_demand_input(demand_input, d_t_plus_1)
+    flatten_lstm_block_2 = lstm_block(demand_input_2)
     merge_ts_lstm_2 = concatenate([flatten_lstm_block_2, dense_ts])
-    dense_block_2 = dense_block(merge_ts_lstm_2, step_back)
+    dense_block_2 = dense_block(merge_ts_lstm_2)
 
     # generating d_t+2
     d_t_plus_2 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_2')(dense_block_2)
     demand_predictions.append(d_t_plus_2)
 
-    # using dense_block_2 from d_t+2 prediction
-    flatten_lstm_block_3 = lstm_block(dense_block_2, step_back)
+    # using d_t+2 prediction
+    demand_input_3 = append_demand_input(demand_input_2, d_t_plus_2)
+    flatten_lstm_block_3 = lstm_block(demand_input_3)
     merge_ts_lstm_3 = concatenate([flatten_lstm_block_3, dense_ts])
-    dense_block_3 = dense_block(merge_ts_lstm_3, step_back)
+    dense_block_3 = dense_block(merge_ts_lstm_3)
 
     # generating d_t+3
     d_t_plus_3 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_3')(dense_block_3)
     demand_predictions.append(d_t_plus_3)
 
-    # using dense_block_3 from d_t+3 prediction
-    flatten_lstm_block_4 = lstm_block(dense_block_3, step_back)
+    # using d_t+3 prediction
+    demand_input_4 = append_demand_input(demand_input_3, d_t_plus_3)
+    flatten_lstm_block_4 = lstm_block(demand_input_4)
     merge_ts_lstm_4 = concatenate([flatten_lstm_block_4, dense_ts])
-    dense_block_4 = dense_block(merge_ts_lstm_4, step_back)
+    dense_block_4 = dense_block(merge_ts_lstm_4)
 
     # generating d_t+4
     d_t_plus_4 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_4')(dense_block_4)
     demand_predictions.append(d_t_plus_4)
 
-    # using dense_block_4 from d_t+4 prediction
-    flatten_lstm_block_5 = lstm_block(dense_block_4, step_back)
+    # using d_t+4 prediction
+    demand_input_5 = append_demand_input(demand_input_4, d_t_plus_4)
+    flatten_lstm_block_5 = lstm_block(demand_input_5)
     merge_ts_lstm_5 = concatenate([flatten_lstm_block_5, dense_ts])
-    dense_block_5 = dense_block(merge_ts_lstm_5, step_back)
+    dense_block_5 = dense_block(merge_ts_lstm_5)
 
     # generating d_t+5
     d_t_plus_5 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_5')(dense_block_5)
@@ -290,6 +299,68 @@ def window_lstm(step_back, ts_shape):
     )
     return model
 
+
+
+
+# def window_lstm(step_back, ts_shape):
+#     demand_predictions = []  # array that will contain all predictions
+#     demand_input = Input(shape=(step_back, 1))
+#     flatten_lstm_block_1 = lstm_block(demand_input)
+#
+#     # adding time space and input
+#     time_space_input = Input(shape=(ts_shape,))
+#     dense_ts = Dense(64, name='dense_ts')(time_space_input)
+#
+#     merge_ts_lstm = concatenate([flatten_lstm_block_1, dense_ts])
+#     dense_block_1 = dense_block(merge_ts_lstm, step_back)
+#
+#     # generating d_t+1
+#     d_t_plus_1 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_1')(dense_block_1)
+#     demand_predictions.append(d_t_plus_1)
+#
+#     # using dense_block_1 from d_t+1 prediction
+#     flatten_lstm_block_2 = lstm_block(dense_block_1, step_back)
+#     merge_ts_lstm_2 = concatenate([flatten_lstm_block_2, dense_ts])
+#     dense_block_2 = dense_block(merge_ts_lstm_2, step_back)
+#
+#     # generating d_t+2
+#     d_t_plus_2 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_2')(dense_block_2)
+#     demand_predictions.append(d_t_plus_2)
+#
+#     # using dense_block_2 from d_t+2 prediction
+#     flatten_lstm_block_3 = lstm_block(dense_block_2, step_back)
+#     merge_ts_lstm_3 = concatenate([flatten_lstm_block_3, dense_ts])
+#     dense_block_3 = dense_block(merge_ts_lstm_3, step_back)
+#
+#     # generating d_t+3
+#     d_t_plus_3 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_3')(dense_block_3)
+#     demand_predictions.append(d_t_plus_3)
+#
+#     # using dense_block_3 from d_t+3 prediction
+#     flatten_lstm_block_4 = lstm_block(dense_block_3, step_back)
+#     merge_ts_lstm_4 = concatenate([flatten_lstm_block_4, dense_ts])
+#     dense_block_4 = dense_block(merge_ts_lstm_4, step_back)
+#
+#     # generating d_t+4
+#     d_t_plus_4 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_4')(dense_block_4)
+#     demand_predictions.append(d_t_plus_4)
+#
+#     # using dense_block_4 from d_t+4 prediction
+#     flatten_lstm_block_5 = lstm_block(dense_block_4, step_back)
+#     merge_ts_lstm_5 = concatenate([flatten_lstm_block_5, dense_ts])
+#     dense_block_5 = dense_block(merge_ts_lstm_5, step_back)
+#
+#     # generating d_t+5
+#     d_t_plus_5 = Dense(1, kernel_constraint=MinMaxNorm(min_value=0.0, max_value=1.0), name='d_t_plus_5')(dense_block_5)
+#     demand_predictions.append(d_t_plus_5)
+#
+#     model = Model(inputs=[demand_input, time_space_input], outputs=demand_predictions)
+#     model.compile(
+#         optimizer='adam',
+#         loss=mean_squared_error,
+#         metrics=[rmse]
+#     )
+#     return model
 
 def prepare_window_model_inputs(train_df, demand_features, ts_features, target_features):
     sample_weight = train_df.loc[train_df.day <= 47]['sample_weight'].values
