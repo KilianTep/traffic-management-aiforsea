@@ -66,7 +66,7 @@ def append_demand_input(demand_input, new_pred):
     return new_demand_input
 
 
-def window_lstm(step_back, ts_shape, lr=0.01):
+def window_lstm(step_back, ts_shape, lr=0.001):
     demand_predictions = []  # array that will contain all predictions
     demand_input = Input(shape=(step_back, 1))
     flatten_lstm_block_1 = lstm_block(demand_input)
