@@ -18,8 +18,8 @@ parser.add_argument('--batch_size', metavar='BATCH_SIZE', type=int, default=128,
                     help='Batch size for training. Default is 128.')
 parser.add_argument('--log_path', metavar='LOG_PATH', type=str, default='./src/logs',
                     help='Path to store logs during training. Default is ./src/logs directory')
-parser.add_argument('--lr', metavar='LEARNING_RATE', type=float, default=0.01,
-                    help='Adam Optimizer Learning Rate. Default is 0.01')
+parser.add_argument('--lr', metavar='LEARNING_RATE', type=float, default=0.001,
+                    help='Adam Optimizer Learning Rate. Default is 0.001')
 parser.add_argument('--pretrained_weights', default=None, type=str,
                     help='Specify path if you wish to continue training with pretrained weights')
 
