@@ -1,11 +1,8 @@
 import argparse
 import datetime
 import pandas as pd
-from src.model import prepare_window_model_inputs, demand_lstm, features, window_lstm
+from src.model import prepare_window_model_inputs, features, window_lstm
 from keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau
-import json
-import os
-import s3fs
 
 DATE_STR = datetime.date.today()
 
@@ -21,9 +18,11 @@ parser.add_argument('--batch_size', metavar='BATCH_SIZE', type=int, default=128,
                     help='Batch size for training. Default is 128.')
 parser.add_argument('--log_path', metavar='LOG_PATH', type=str, default='./src/logs',
                     help='Path to store logs during training. Default is ./src/logs directory')
-parser.add_argument('--s3_option', metavar='S3_OPTION', type=bool, default=False,
-                    help='Change this argument to True if you are reading the test set and saving the model and logs to'
-                    + ' S3. Make sure you do local for all or s3 for all ')
+parser.add_argument('--lr', metavar='LEARNING_RATE', type=float, default=0.01,
+                    help='Adam Optimizer Learning Rate. Default is 0.01')
+parser.add_argument('--pretrained_weights', default=None, type=str,
+                    help='Specify path if you wish to continue training with pretrained weights')
+
 
 if __name__ == '__main__':
 
@@ -37,7 +36,8 @@ if __name__ == '__main__':
     epochs = args.epochs
     log_path = args.log_path
     batch_size = args.batch_size
-    s3_option = args.s3_option
+    lr = args.lr
+    pretrained_weights = args.pretrained_weights
 
     if output_model_path[-1] == '/':
         output_model_path = output_model_path[:-1]
@@ -48,42 +48,7 @@ if __name__ == '__main__':
     model_filepath = '{}/trained_model_{}'.format(output_model_path, DATE_STR)
     log_filepath = '{}/model_{}.log'.format(log_path, DATE_STR)
 
-    if s3_option:
-        with open('./src/aws_config.json', 'r') as config_file:
-            aws_config = json.load(config_file)
-
-        os.environ['AWS_PROFILE'] = aws_config['aws_env']['AWS_PROFILE']
-        os.environ['AWS_DEFAULT_REGION'] = aws_config['aws_env']['AWS_DEFAULT_REGION']
-
-        s3 = s3fs.S3FileSystem(anon=True)
-        with s3.open(transformed_train_path, 'r') as f:
-            transformed_df = pd.read_parquet(f)
-        with s3.open(log_filepath, 'w') as f:
-            csv_logger = CSVLogger(
-                filename=f,
-                separator=',',
-                append=True)
-        with s3.open('{}_best_check_point'.format(model_filepath), 'w') as f:
-            checkpointer = ModelCheckpoint(
-                filepath='{}_best_check_point'.format(f),
-                verbose=1,
-                monitor='val_loss',
-                save_best_only=True)
-    else:
-        transformed_df = pd.read_parquet(transformed_train_path)
-        csv_logger = CSVLogger(
-            filename=log_filepath,
-            separator=',',
-            append=True)
-        checkpointer = ModelCheckpoint(
-            filepath='{}_best_check_point'.format(model_filepath),
-            verbose=1,
-            monitor='val_loss',
-            save_best_only=True)
-
-
-    # X_demand_train, X_ts_train, X_demand_test, X_ts_test, Y_train, Y_test, sample_weight, step_back, \
-    #     ts_shape, y_shape = prepare_model_inputs(transformed_df, demand_features, ts_features, target_features)
+    transformed_df = pd.read_parquet(transformed_train_path)
 
     X_demand_train, X_ts_train, X_demand_val, X_ts_val, Y_train, Y_val, sample_weight, step_back, ts_shape, \
         weight_dict = prepare_window_model_inputs(transformed_df, demand_features, ts_features, target_features)
@@ -94,18 +59,22 @@ if __name__ == '__main__':
         patience=2,
         min_lr=0.000008)
 
-    # model = demand_lstm(step_back, ts_shape, y_shape)
-    # model.fit(
-    #     x=[X_demand_train, X_ts_train],
-    #     y=Y_train,
-    #     validation_data=([X_demand_test, X_ts_test], Y_test),
-    #     sample_weight=sample_weight,
-    #     batch_size=batch_size,
-    #     epochs=epochs,
-    #     callbacks=[checkpointer, csv_logger, reduce_lr]
-    # )
+    csv_logger = CSVLogger(
+        filename=log_filepath,
+        separator=',',
+        append=True)
 
-    model = window_lstm(step_back, ts_shape)
+    checkpointer = ModelCheckpoint(
+        filepath='{}_best_check_point'.format(model_filepath),
+        verbose=1,
+        monitor='val_loss',
+        save_best_only=True)
+
+    model = window_lstm(step_back, ts_shape, lr=lr)
+
+    if pretrained_weights is not None:
+        model.load_weights(pretrained_weights)
+
     model.fit(
         x=[X_demand_train, X_ts_train],
         y=Y_train,
@@ -119,10 +88,6 @@ if __name__ == '__main__':
     print(model.summary())
 
     print('Saving model at {}...'.format(model_filepath))
-    if s3_option:
-        with s3.open(model_filepath, 'w') as f:
-            model.save(f)
-    else:
-        model.save(model_filepath)
+    model.save(model_filepath)
     print('Model saved.')
 

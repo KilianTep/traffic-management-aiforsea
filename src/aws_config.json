@@ -1,6 +1,0 @@
-{
-  "aws_env": {
-    "AWS_PROFILE": "default",
-    "AWS_DEFAULT_REGION": "ap-southeast-1"
-  }
-}
