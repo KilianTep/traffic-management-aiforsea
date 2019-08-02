@@ -167,3 +167,20 @@ def prepare_window_model_inputs(train_df, demand_features, ts_features, target_f
 
     return X_demand_train, X_ts_train, X_demand_val, X_ts_val, \
         Y_train, Y_val, sample_weight, step_back, ts_shape, weight_dict
+
+
+def prepare_test_inputs(transformed_test_df, demand_features, ts_features, target_features):
+
+    step_back = len(demand_features)
+    X_demand = transformed_test_df[demand_features].values
+    X_demand = np.reshape([x for x in X_demand], (-1, step_back, 1))
+
+    ts_shape = len(ts_features)
+    X_ts = transformed_test_df[ts_features].values
+    X_ts = np.reshape([x for x in X_ts], (-1, ts_shape))
+
+    Y = []
+    for tf in target_features:
+        Y.append(transformed_test_df[tf].values)
+
+    return X_demand, X_ts, Y
