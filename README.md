@@ -102,8 +102,20 @@ I trained the model on the first 47 days and evaluated its performance on the
 remaining 14 ones. Roughly, the training set has about 3.2 million samples and
 the test set has nearly 1 million samples.
 
-Unlike the previous architecture, the Keras backend is able to give me the performance on the model of each time step:
+Unlike the previous architecture, the Keras backend is able to give me the performance on the model of each time step.
+The results on the test set are better than the previous approach:
 
+**D T+1**: 0.04
+
+**D T+2**: 0.05
+
+**D T+3**: 0.04
+
+**D T+4**: 0.05
+
+**D T+5**: 0.05
+
+**Overall RMSE**: 0.05
 
 
 ## Other
