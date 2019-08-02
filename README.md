@@ -7,7 +7,7 @@ In order to understand my thought-process, take a look at the two following Medi
 
 [AI For SEA Traffic Management: Feature Engineering (Part 1/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-feature-engineering-part-1-2-e54f8d4eaa9e?postPublishedType=repub)
 
-Old approach -- **Outdated, irrelevant to this branch):
+Old approach -- **Outdated, irrelevant to this branch)**:
 [AI For SEA Traffic Management: Modeling (Part 2/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-modeling-part-2-2-45cf301bd37?postPublishedType=repub)
 
 ## Getting started
