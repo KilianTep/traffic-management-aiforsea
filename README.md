@@ -54,13 +54,13 @@ You can also save the training logs in the specified output path for `--log_path
 If you wish to retrain the model based on previous weights specify the path for `--pretrained_weights`
 
 ### 3. Model evaluation
-**If you do not wish to retrain the model**, you can simply use the file `./models/best_lstm_model` by running the following commands:
+**If you do not wish to retrain the model**, you can simply use the file `./models/best_window_lstm_model` by running the following commands:
 ```bash
 # If you want to use your own test set, you need to preprocess it first:
 python ./src/preprocess_dataset.py --csv_path <PATH_TO_CSV_TEST> --output_path ./dataset
 
 # pass in the preprocessed test set into the following command:
-python ./src/evaluate_model.py --model_path ./models/best_lstm_model --transformed_test_df_path ./dataset/<PATH_TO_CSV_TEST>_transformed.snappy.parquet 
+python ./src/evaluate_model.py --model_path ./models/best_window_lstm_model --transformed_test_df_path ./dataset/<PATH_TO_CSV_TEST>_transformed.snappy.parquet 
 ```
 **Warning:** your csv test file must have the same schema as `./dataset/training.csv`.
 
