@@ -106,6 +106,8 @@ the test set has nearly 1 million samples.
 Unlike the previous architecture, the Keras backend is able to give me the performance on the model of each time step.
 The results on the test set are better than the previous approach:
 
+**Individual RMSEs:**
+
 **D T+1**: 0.04
 
 **D T+2**: 0.05
