@@ -11,6 +11,10 @@ Old approach -- **Outdated, irrelevant to this branch**:
 
 [AI For SEA Traffic Management: Modeling (Part 2/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-modeling-part-2-2-45cf301bd37?postPublishedType=repub)
 
+New approach: Window LSTM
+
+[AI For SEA Traffic Management: Window LSTM for Multi-Step Forecasting (Epilogue)](https://towardsdatascience.com/ai-for-sea-traffic-management-window-lstm-for-multi-step-forecasting-epilogue-33551e1e07c9)
+
 ## Getting started
 **Install necessary dependencies with virtual environment**:
 ```bash
@@ -47,7 +51,7 @@ This procedure may take some time, depending on your machine's computing power.
 **If you wish to retrain the model**, you can run the following command. It is strongly advised you connect your machine
 to GPU resources. (I assume you have followed the above procedure before running the command) 
 ```bash
-python ./src/train_model.py --transformed_train_path ./dataset/training.csv_transformed.snappy.parquet --output_model_path ./models --epochs 30 --batch_size 256 --log_path ./src/logs
+python ./src/train_model.py --transformed_train_path ./dataset/training.csv_transformed.snappy.parquet --output_model_path ./models --epochs 30 --batch_size 200 --log_path ./src/logs
 ```
 The model was trained on the first six weeks of the dataset and evaluated on the last two weeks.
 You can also save the training logs in the specified output path for `--log_path`
