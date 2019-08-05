@@ -3,7 +3,7 @@ https://www.aiforsea.com/traffic-management
 
 Submission by **Kilian Tep**
 
-In order to understand my thought-process, take a look at the two following Medium articles:
+In order to understand my thought-process, take a look at the following Medium articles:
 
 [AI For SEA Traffic Management: Feature Engineering (Part 1/2)](https://medium.com/@kiliantep/ai-for-sea-traffic-management-feature-engineering-part-1-2-e54f8d4eaa9e?postPublishedType=repub)
 
